@@ -11,9 +11,9 @@ export default function Navbar() {
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">C</span>
+            <span className="text-white font-bold text-xl">S</span>
           </div>
-          <span className="text-xl font-bold font-heading text-foreground">ChatMage</span>
+          <span className="text-xl font-bold font-heading text-foreground">SellWithGPT</span>
         </div>
 
         {/* Desktop Nav */}

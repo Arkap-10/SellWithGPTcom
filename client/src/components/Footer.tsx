@@ -8,9 +8,9 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-2 mb-6">
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">C</span>
+                <span className="text-white font-bold text-xl">S</span>
               </div>
-              <span className="text-xl font-bold font-heading">ChatMage</span>
+              <span className="text-xl font-bold font-heading">SellWithGPT</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
               Empowering e-commerce businesses to sell directly inside the world's most popular AI interfaces.
@@ -49,7 +49,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-          <p>&copy; 2024 ChatMage Inc. All rights reserved.</p>
+          <p>&copy; 2024 SellWithGPT Inc. All rights reserved.</p>
           <div className="flex gap-6">
             <a href="#" className="hover:text-white">Privacy Policy</a>
             <a href="#" className="hover:text-white">Terms of Service</a>
