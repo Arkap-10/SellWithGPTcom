@@ -23,7 +23,7 @@ export default function Hero() {
                 Turn ChatGPT Conversations into <span className="text-[#FF6900]">Magento Sales</span>
               </h1>
               <p className="text-xl text-muted-foreground mb-8 leading-relaxed max-w-xl">
-                The first Apps SDK & MCP integration that enables your customers to browse catalogs and complete purchases directly within the ChatGPT interface.
+                The first seamless integration that lets millions of ChatGPT users browse your catalog and buy products instantly—without ever leaving the conversation.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 mb-10">
