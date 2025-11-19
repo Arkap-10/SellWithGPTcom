@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { TrialSignupModal } from "@/components/TrialSignupModal";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,9 +22,11 @@ export default function Navbar() {
           <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Features</a>
           <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Pricing</a>
           <a href="#contact" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Contact</a>
-          <Button className="bg-[#0066CC] hover:bg-[#0052a3] text-white font-medium px-6">
-            Get Started
-          </Button>
+          <TrialSignupModal>
+            <Button className="bg-[#0066CC] hover:bg-[#0052a3] text-white font-medium px-6">
+              Start Free Trial
+            </Button>
+          </TrialSignupModal>
         </div>
 
         {/* Mobile Toggle */}
@@ -38,7 +41,9 @@ export default function Navbar() {
           <a href="#features" className="text-base font-medium text-foreground" onClick={() => setIsOpen(false)}>Features</a>
           <a href="#pricing" className="text-base font-medium text-foreground" onClick={() => setIsOpen(false)}>Pricing</a>
           <a href="#contact" className="text-base font-medium text-foreground" onClick={() => setIsOpen(false)}>Contact</a>
-          <Button className="bg-[#0066CC] w-full">Get Started</Button>
+          <TrialSignupModal>
+            <Button className="bg-[#0066CC] w-full">Start Free Trial</Button>
+          </TrialSignupModal>
         </div>
       )}
     </nav>

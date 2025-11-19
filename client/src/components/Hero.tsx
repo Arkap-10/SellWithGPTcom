@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import heroImage from "@assets/generated_images/Hero_illustration_of_chat_connecting_to_ecommerce_ab62e0cf.png";
 import { ArrowRight, CheckCircle } from "lucide-react";
+import { TrialSignupModal } from "@/components/TrialSignupModal";
 
 export default function Hero() {
   return (
@@ -26,9 +27,11 @@ export default function Hero() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 mb-10">
-                <Button size="lg" className="bg-[#0066CC] hover:bg-[#0052a3] text-white text-lg px-8 h-12">
-                  Start Free Trial <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
+                <TrialSignupModal>
+                  <Button size="lg" className="bg-[#0066CC] hover:bg-[#0052a3] text-white text-lg px-8 h-12">
+                    Start Your 14-Day Free Trial <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </TrialSignupModal>
                 <Button variant="outline" size="lg" className="text-foreground border-gray-200 hover:bg-gray-50 text-lg px-8 h-12">
                   View Demo
                 </Button>

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { TrialSignupModal } from "@/components/TrialSignupModal";
 
 const plans = [
   {
@@ -13,7 +14,7 @@ const plans = [
       "Standard Checkout Flow",
       "Email Support"
     ],
-    cta: "Start Free Trial",
+    cta: "Start 14-Day Free Trial",
     popular: false
   },
   {
@@ -27,7 +28,7 @@ const plans = [
       "Priority Chat Support",
       "Advanced Analytics"
     ],
-    cta: "Get Started",
+    cta: "Start 14-Day Free Trial",
     popular: true
   },
   {
@@ -91,15 +92,25 @@ export default function Pricing() {
                 </ul>
               </CardContent>
               <CardFooter className="pt-8">
-                <Button 
-                  className={`w-full h-12 text-base font-medium ${
-                    plan.popular 
-                      ? 'bg-[#0066CC] hover:bg-[#0052a3] text-white' 
-                      : 'bg-white border-2 border-gray-100 hover:border-gray-300 text-foreground hover:bg-gray-50 shadow-none'
-                  }`}
-                >
-                  {plan.cta}
-                </Button>
+                {plan.name === "Enterprise" ? (
+                  <Button 
+                    className="w-full h-12 text-base font-medium bg-white border-2 border-gray-100 hover:border-gray-300 text-foreground hover:bg-gray-50 shadow-none"
+                  >
+                    {plan.cta}
+                  </Button>
+                ) : (
+                  <TrialSignupModal planName={plan.name} price={plan.price}>
+                    <Button 
+                      className={`w-full h-12 text-base font-medium ${
+                        plan.popular 
+                          ? 'bg-[#0066CC] hover:bg-[#0052a3] text-white' 
+                          : 'bg-white border-2 border-gray-100 hover:border-gray-300 text-foreground hover:bg-gray-50 shadow-none'
+                      }`}
+                    >
+                      {plan.cta}
+                    </Button>
+                  </TrialSignupModal>
+                )}
               </CardFooter>
             </Card>
           ))}
