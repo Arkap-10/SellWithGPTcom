@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertTrialSignupSchema } from "@shared/schema";
+import { storageClient } from "./storage-client";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/trial-signup", async (req, res) => {
@@ -57,6 +58,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error("Error fetching signups:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/video/:filename", async (req, res) => {
+    try {
+      const { filename } = req.params;
+      
+      const existsResult = await storageClient.exists(filename);
+      if (!existsResult.ok || !existsResult.value) {
+        return res.status(404).json({ error: "Video not found" });
+      }
+
+      const downloadResult = await storageClient.downloadAsStream(filename);
+      if (!downloadResult.ok) {
+        console.error("Error downloading video:", downloadResult.error);
+        return res.status(500).json({ error: "Failed to retrieve video" });
+      }
+
+      res.setHeader('Content-Type', 'video/mp4');
+      res.setHeader('Accept-Ranges', 'bytes');
+      
+      downloadResult.value.pipe(res);
+    } catch (error) {
+      console.error("Video streaming error:", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   });
