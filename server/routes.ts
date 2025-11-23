@@ -71,38 +71,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Video not found" });
       }
 
-      // For proper Safari/iOS support, we need to download as bytes to handle range requests
-      const downloadResult = await storageClient.downloadAsBytes(filename);
-      if (!downloadResult.ok) {
-        console.error("Error downloading video:", downloadResult.error);
-        return res.status(500).json({ error: "Failed to retrieve video" });
-      }
-
-      const videoBuffer = downloadResult.value;
-      const fileSize = videoBuffer.length;
-      const range = req.headers.range;
-
+      const stream = await storageClient.downloadAsStream(filename);
+      
       res.setHeader('Content-Type', 'video/mp4');
       res.setHeader('Accept-Ranges', 'bytes');
-
-      if (range) {
-        // Parse range header (e.g., "bytes=0-1023")
-        const parts = range.replace(/bytes=/, "").split("-");
-        const start = parseInt(parts[0], 10);
-        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-        const chunkSize = (end - start) + 1;
-
-        res.status(206); // Partial Content
-        res.setHeader('Content-Range', `bytes ${start}-${end}/${fileSize}`);
-        res.setHeader('Content-Length', chunkSize);
-        
-        const chunk = videoBuffer.slice(start, end + 1);
-        res.end(chunk);
-      } else {
-        // Send entire file
-        res.setHeader('Content-Length', fileSize);
-        res.end(videoBuffer);
-      }
+      
+      stream.on('error', (error) => {
+        console.error("Stream error:", error);
+        if (!res.headersSent) {
+          res.status(500).json({ error: "Failed to stream video" });
+        }
+      });
+      
+      stream.pipe(res);
     } catch (error) {
       console.error("Video streaming error:", error);
       return res.status(500).json({ error: "Internal server error" });
