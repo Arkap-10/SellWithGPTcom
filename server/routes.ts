@@ -71,16 +71,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Video not found" });
       }
 
-      const downloadResult = await storageClient.downloadAsStream(filename);
-      if (!downloadResult.ok) {
-        console.error("Error downloading video:", downloadResult.error);
-        return res.status(500).json({ error: "Failed to retrieve video" });
-      }
-
+      const stream = await storageClient.downloadAsStream(filename);
+      
       res.setHeader('Content-Type', 'video/mp4');
       res.setHeader('Accept-Ranges', 'bytes');
       
-      downloadResult.value.pipe(res);
+      stream.on('error', (error) => {
+        console.error("Stream error:", error);
+        if (!res.headersSent) {
+          res.status(500).json({ error: "Failed to stream video" });
+        }
+      });
+      
+      stream.pipe(res);
     } catch (error) {
       console.error("Video streaming error:", error);
       return res.status(500).json({ error: "Internal server error" });

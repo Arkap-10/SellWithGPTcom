@@ -58,11 +58,18 @@ export default function Hero() {
               className="relative z-10"
             >
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-[#FF6900]/20 rounded-full blur-3xl opacity-30"></div>
-              <img 
-                src={heroImage} 
-                alt="ChatGPT Integration Interface" 
+              <video 
+                src="/api/video/SellWithGPTIntroVideo.mp4"
                 className="relative w-full h-auto rounded-2xl shadow-2xl border border-white/20 backdrop-blur-sm"
-              />
+                autoPlay
+                muted
+                loop
+                playsInline
+                controls
+                data-testid="video-hero-demo"
+              >
+                Your browser does not support the video tag.
+              </video>
               
               {/* Floating UI Cards for effect */}
               <motion.div 
