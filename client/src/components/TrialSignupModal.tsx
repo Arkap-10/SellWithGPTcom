@@ -128,7 +128,7 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
       
       toast({
         title: "Trial Started Successfully!",
-        description: "Check your email for your account credentials. Welcome to SellWithGPT.",
+        description: "Our team will be in touch with you shortly on the email provided. Welcome to SellWithGPT.",
         duration: 5000,
       });
     } catch (error: any) {
