@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, MessageSquare, ArrowRight } from "lucide-react";
+import { Mail, ArrowRight } from "lucide-react";
 
 export default function Contact() {
   return (
@@ -27,17 +27,6 @@ export default function Contact() {
                   <h3 className="text-xl font-bold mb-2">Email Us</h3>
                   <p className="text-muted-foreground mb-1">Our team typically responds within 2 hours.</p>
                   <a href="mailto:sales@sellwithgpt.com" className="text-[#0066CC] font-medium hover:underline">sales@sellwithgpt.com</a>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
-                  <MessageSquare className="w-6 h-6 text-secondary" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Live Chat</h3>
-                  <p className="text-muted-foreground mb-1">Available Mon-Fri, 9am - 6pm PST.</p>
-                  <button className="text-[#0066CC] font-medium hover:underline text-left">Start a conversation</button>
                 </div>
               </div>
             </div>
