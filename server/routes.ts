@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertTrialSignupSchema } from "@shared/schema";
-import { storageClient } from "./storage-client";
+import { gcsBucket } from "./storage-client";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/trial-signup", async (req, res) => {
@@ -65,27 +65,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/video/:filename", async (req, res) => {
     try {
       const { filename } = req.params;
+      const file = gcsBucket.file(filename);
       
-      const existsResult = await storageClient.exists(filename);
-      if (!existsResult.ok || !existsResult.value) {
+      // Get file metadata
+      const [metadata] = await file.getMetadata();
+      const fileSize = parseInt(metadata.size);
+      
+      const range = req.headers.range;
+      
+      // Handle HEAD requests
+      if (req.method === 'HEAD') {
+        res.writeHead(200, {
+          'Content-Length': fileSize,
+          'Content-Type': 'video/mp4',
+          'Accept-Ranges': 'bytes'
+        });
+        return res.end();
+      }
+      
+      // Handle range requests (Safari requires this)
+      if (range) {
+        const parts = range.replace(/bytes=/, '').split('-');
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        
+        // Validate range
+        if (start >= fileSize || end >= fileSize) {
+          res.writeHead(416, {
+            'Content-Range': `bytes */${fileSize}`
+          });
+          return res.end();
+        }
+        
+        const chunkSize = (end - start) + 1;
+        
+        // Create read stream with range
+        const stream = file.createReadStream({
+          start,
+          end
+        });
+        
+        // 206 Partial Content response
+        res.writeHead(206, {
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunkSize,
+          'Content-Type': 'video/mp4'
+        });
+        
+        stream.on('error', (error) => {
+          console.error("Stream error:", error);
+          if (!res.headersSent) {
+            res.status(500).json({ error: "Failed to stream video" });
+          }
+        });
+        
+        stream.pipe(res);
+      } else {
+        // No range request - send full file
+        res.writeHead(200, {
+          'Content-Length': fileSize,
+          'Content-Type': 'video/mp4',
+          'Accept-Ranges': 'bytes'
+        });
+        
+        const stream = file.createReadStream();
+        
+        stream.on('error', (error) => {
+          console.error("Stream error:", error);
+          if (!res.headersSent) {
+            res.status(500).json({ error: "Failed to stream video" });
+          }
+        });
+        
+        stream.pipe(res);
+      }
+    } catch (error: any) {
+      console.error("Video streaming error:", error);
+      if (error.code === 404) {
         return res.status(404).json({ error: "Video not found" });
       }
-
-      const stream = await storageClient.downloadAsStream(filename);
-      
-      res.setHeader('Content-Type', 'video/mp4');
-      res.setHeader('Accept-Ranges', 'bytes');
-      
-      stream.on('error', (error) => {
-        console.error("Stream error:", error);
-        if (!res.headersSent) {
-          res.status(500).json({ error: "Failed to stream video" });
-        }
-      });
-      
-      stream.pipe(res);
-    } catch (error) {
-      console.error("Video streaming error:", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   });
