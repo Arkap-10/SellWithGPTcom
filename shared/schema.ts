@@ -9,7 +9,7 @@ export const trialSignups = pgTable("trial_signups", {
   fullName: text("full_name").notNull(),
   companyName: text("company_name"),
   phone: text("phone"),
-  planName: text("plan_name").notNull().default("Growth"),
+  planName: text("plan_name"),
   cardProvided: boolean("card_provided").notNull().default(false),
   cardMasked: text("card_masked"),
   createdAt: timestamp("created_at").notNull().defaultNow(),

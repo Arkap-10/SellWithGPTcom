@@ -21,7 +21,7 @@ interface TrialSignupModalProps {
   price?: string;
 }
 
-export function TrialSignupModal({ children, planName = "Growth", price = "$149" }: TrialSignupModalProps) {
+export function TrialSignupModal({ children, planName = "", price = "" }: TrialSignupModalProps) {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -100,7 +100,7 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
           fullName: formData.fullName,
           companyName: formData.companyName || undefined,
           phone: formData.phone || undefined,
-          planName,
+          planName: planName || null,
           cardProvided: true,
           cardMasked: maskedCard || undefined,
         }),
