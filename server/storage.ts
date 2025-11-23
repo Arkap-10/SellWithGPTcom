@@ -1,37 +1,41 @@
-import { type User, type InsertUser } from "@shared/schema";
+import { type TrialSignup, type InsertTrialSignup } from "@shared/schema";
 import { randomUUID } from "crypto";
 
-// modify the interface with any CRUD methods
-// you might need
-
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getTrialSignupByEmail(email: string): Promise<TrialSignup | undefined>;
+  createTrialSignup(signup: InsertTrialSignup): Promise<TrialSignup>;
+  getAllTrialSignups(): Promise<TrialSignup[]>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+  private trialSignups: Map<string, TrialSignup>;
 
   constructor() {
-    this.users = new Map();
+    this.trialSignups = new Map();
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
+  async getTrialSignupByEmail(email: string): Promise<TrialSignup | undefined> {
+    return Array.from(this.trialSignups.values()).find(
+      (signup) => signup.email === email,
     );
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async createTrialSignup(insertSignup: InsertTrialSignup): Promise<TrialSignup> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    const signup: TrialSignup = {
+      id,
+      email: insertSignup.email,
+      password: insertSignup.password,
+      planName: insertSignup.planName || "Growth",
+      cardProvided: insertSignup.cardProvided || false,
+      createdAt: new Date(),
+    };
+    this.trialSignups.set(id, signup);
+    return signup;
+  }
+
+  async getAllTrialSignups(): Promise<TrialSignup[]> {
+    return Array.from(this.trialSignups.values());
   }
 }
 

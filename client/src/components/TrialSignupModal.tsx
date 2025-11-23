@@ -26,6 +26,14 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    cardNumber: "",
+    expiry: "",
+    cvc: "",
+    cardName: "",
+  });
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,18 +44,52 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsLoading(false);
-    setIsOpen(false);
-    setStep(1);
-    
-    toast({
-      title: "Trial Started Successfully!",
-      description: "Check your email for your account credentials. Welcome to SellWithGPT.",
-      duration: 5000,
-    });
+    try {
+      const response = await fetch("/api/trial-signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          planName,
+          cardProvided: true,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Signup failed");
+      }
+
+      setIsLoading(false);
+      setIsOpen(false);
+      setStep(1);
+      setFormData({
+        email: "",
+        password: "",
+        cardNumber: "",
+        expiry: "",
+        cvc: "",
+        cardName: "",
+      });
+      
+      toast({
+        title: "Trial Started Successfully!",
+        description: "Check your email for your account credentials. Welcome to SellWithGPT.",
+        duration: 5000,
+      });
+    } catch (error: any) {
+      setIsLoading(false);
+      toast({
+        title: "Signup Failed",
+        description: error.message || "Something went wrong. Please try again.",
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
   };
 
   const futureDate = new Date();
@@ -76,11 +118,26 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
             <form onSubmit={handleEmailSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Work Email</Label>
-                <Input id="email" type="email" placeholder="name@company.com" required autoFocus />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="name@company.com" 
+                  required 
+                  autoFocus 
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Create Password</Label>
-                <Input id="password" type="password" placeholder="Min. 8 characters" required />
+                <Input 
+                  id="password" 
+                  type="password" 
+                  placeholder="Min. 8 characters" 
+                  required 
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                />
               </div>
               <Button type="submit" className="w-full bg-[#0066CC] hover:bg-[#0052a3] h-11 text-base">
                 Continue
@@ -98,27 +155,50 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
                   <Label>Card Information</Label>
                   <div className="relative">
                     <CreditCard className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <Input placeholder="0000 0000 0000 0000" className="pl-10 font-mono" required />
+                    <Input 
+                      placeholder="0000 0000 0000 0000" 
+                      className="pl-10 font-mono" 
+                      required 
+                      value={formData.cardNumber}
+                      onChange={(e) => setFormData({ ...formData, cardNumber: e.target.value })}
+                    />
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Expiry Date</Label>
-                    <Input placeholder="MM / YY" className="font-mono" required />
+                    <Input 
+                      placeholder="MM / YY" 
+                      className="font-mono" 
+                      required 
+                      value={formData.expiry}
+                      onChange={(e) => setFormData({ ...formData, expiry: e.target.value })}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>CVC</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-                      <Input placeholder="123" className="pl-9 font-mono" required />
+                      <Input 
+                        placeholder="123" 
+                        className="pl-9 font-mono" 
+                        required 
+                        value={formData.cvc}
+                        onChange={(e) => setFormData({ ...formData, cvc: e.target.value })}
+                      />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label>Name on Card</Label>
-                  <Input placeholder="Cardholder Name" required />
+                  <Input 
+                    placeholder="Cardholder Name" 
+                    required 
+                    value={formData.cardName}
+                    onChange={(e) => setFormData({ ...formData, cardName: e.target.value })}
+                  />
                 </div>
               </div>
 
