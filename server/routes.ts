@@ -69,7 +69,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get file metadata
       const [metadata] = await file.getMetadata();
-      const fileSize = parseInt(metadata.size);
+      const fileSize = typeof metadata.size === 'number' ? metadata.size : parseInt(metadata.size || '0');
       
       const range = req.headers.range;
       
