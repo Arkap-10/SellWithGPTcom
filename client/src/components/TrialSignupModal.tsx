@@ -37,8 +37,43 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
     cardName: "",
   });
 
+  const validateEmail = (email: string): string | null => {
+    if (!email) {
+      return "Email is required";
+    }
+    
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email address";
+    }
+    
+    const domain = email.split('@')[1]?.toLowerCase();
+    const disposableDomains = [
+      'tempmail.com', 'throwaway.email', '10minutemail.com', 'guerrillamail.com',
+      'mailinator.com', 'maildrop.cc', 'temp-mail.org', 'getnada.com'
+    ];
+    
+    if (disposableDomains.includes(domain)) {
+      return "Please use a professional email address";
+    }
+    
+    return null;
+  };
+
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      toast({
+        title: "Invalid Email",
+        description: emailError,
+        variant: "destructive",
+        duration: 3000,
+      });
+      return;
+    }
+    
     setStep(2);
   };
 
@@ -172,6 +207,7 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
                   required 
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
                 />
               </div>
               <div className="space-y-2">
