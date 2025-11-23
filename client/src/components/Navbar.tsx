@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { TrialSignupModal } from "@/components/TrialSignupModal";
+import logo from "@assets/SellWithGPTLogo_1763916030768.jpeg";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,9 +12,7 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">S</span>
-          </div>
+          <img src={logo} alt="SellWithGPT Logo" className="w-8 h-8 rounded-lg object-cover" />
           <span className="text-xl font-bold font-heading text-foreground">SellWithGPT</span>
         </div>
 

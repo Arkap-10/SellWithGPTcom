@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import logo from "@assets/SellWithGPTLogo_1763916030768.jpeg";
 
 export default function Footer() {
   return (
@@ -7,9 +8,7 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">S</span>
-              </div>
+              <img src={logo} alt="SellWithGPT Logo" className="w-8 h-8 rounded-lg object-cover" />
               <span className="text-xl font-bold font-heading">SellWithGPT</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">

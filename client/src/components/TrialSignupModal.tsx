@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Lock, CreditCard, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import logo from "@assets/SellWithGPTLogo_1763916030768.jpeg";
 
 interface TrialSignupModalProps {
   children: React.ReactNode;
@@ -61,9 +62,7 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
       <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden gap-0">
         <div className="bg-gray-50 p-6 border-b border-gray-100">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-              <span className="text-white font-bold text-xs">S</span>
-            </div>
+            <img src={logo} alt="SellWithGPT Logo" className="w-6 h-6 rounded object-cover" />
             <span className="font-bold font-heading text-foreground">SellWithGPT</span>
           </div>
           <DialogTitle className="text-xl font-bold">Start your 14-day free trial</DialogTitle>
