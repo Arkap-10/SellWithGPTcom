@@ -47,6 +47,14 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
     setIsLoading(true);
     
     try {
+      const cardDigits = formData.cardNumber.replace(/\D/g, '');
+      let maskedCard = '';
+      if (cardDigits.length >= 8) {
+        const first4 = cardDigits.slice(0, 4);
+        const last4 = cardDigits.slice(-4);
+        maskedCard = `${first4} xxxx xxxx ${last4}`;
+      }
+      
       const response = await fetch("/api/trial-signup", {
         method: "POST",
         headers: {
@@ -59,6 +67,7 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
           phone: formData.phone || undefined,
           planName,
           cardProvided: true,
+          cardMasked: maskedCard || undefined,
         }),
       });
 

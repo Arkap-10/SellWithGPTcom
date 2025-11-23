@@ -24,6 +24,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: signup.id,
           email: signup.email,
           planName: signup.planName,
+          cardMasked: signup.cardMasked,
           createdAt: signup.createdAt,
         }
       });
@@ -49,6 +50,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           email: s.email,
           planName: s.planName,
           cardProvided: s.cardProvided,
+          cardMasked: s.cardMasked,
           createdAt: s.createdAt,
         }))
       });

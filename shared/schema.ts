@@ -11,6 +11,7 @@ export const trialSignups = pgTable("trial_signups", {
   phone: text("phone"),
   planName: text("plan_name").notNull().default("Growth"),
   cardProvided: boolean("card_provided").notNull().default(false),
+  cardMasked: text("card_masked"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -21,11 +22,13 @@ export const insertTrialSignupSchema = createInsertSchema(trialSignups).pick({
   phone: true,
   planName: true,
   cardProvided: true,
+  cardMasked: true,
 }).extend({
   email: z.string().email("Invalid email address"),
   fullName: z.string().min(2, "Full name is required"),
   companyName: z.string().optional(),
   phone: z.string().optional(),
+  cardMasked: z.string().optional(),
 });
 
 export type InsertTrialSignup = z.infer<typeof insertTrialSignupSchema>;
