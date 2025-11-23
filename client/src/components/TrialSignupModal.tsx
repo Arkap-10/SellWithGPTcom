@@ -101,6 +101,18 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
     }
   };
 
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, '');
+    let formattedValue = '';
+    for (let i = 0; i < value.length && i < 16; i++) {
+      if (i > 0 && i % 4 === 0) {
+        formattedValue += ' ';
+      }
+      formattedValue += value[i];
+    }
+    setFormData({ ...formData, cardNumber: formattedValue });
+  };
+
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
     if (value.length >= 2) {
@@ -208,7 +220,8 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
                       className="pl-10 font-mono" 
                       required 
                       value={formData.cardNumber}
-                      onChange={(e) => setFormData({ ...formData, cardNumber: e.target.value })}
+                      onChange={handleCardNumberChange}
+                      maxLength={19}
                     />
                   </div>
                 </div>
