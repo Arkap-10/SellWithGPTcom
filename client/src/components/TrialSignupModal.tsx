@@ -60,6 +60,81 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
     return null;
   };
 
+  const validateCardNumber = (cardNumber: string): string | null => {
+    const digits = cardNumber.replace(/\D/g, '');
+    
+    if (!digits) {
+      return "Card number is required";
+    }
+    
+    if (digits.length < 13 || digits.length > 19) {
+      return "Card number must be between 13 and 19 digits";
+    }
+    
+    // Luhn algorithm validation
+    let sum = 0;
+    let isEven = false;
+    
+    for (let i = digits.length - 1; i >= 0; i--) {
+      let digit = parseInt(digits[i]);
+      
+      if (isEven) {
+        digit *= 2;
+        if (digit > 9) {
+          digit -= 9;
+        }
+      }
+      
+      sum += digit;
+      isEven = !isEven;
+    }
+    
+    if (sum % 10 !== 0) {
+      return "Please enter a valid card number";
+    }
+    
+    return null;
+  };
+
+  const validateExpiry = (expiry: string): string | null => {
+    if (!expiry) {
+      return "Expiry date is required";
+    }
+    
+    const parts = expiry.split('/');
+    if (parts.length !== 2) {
+      return "Please enter expiry in MM/YY format";
+    }
+    
+    const month = parseInt(parts[0]);
+    const year = parseInt(parts[1]);
+    
+    if (month < 1 || month > 12) {
+      return "Invalid month";
+    }
+    
+    const currentYear = new Date().getFullYear() % 100;
+    const currentMonth = new Date().getMonth() + 1;
+    
+    if (year < currentYear || (year === currentYear && month < currentMonth)) {
+      return "Card has expired";
+    }
+    
+    return null;
+  };
+
+  const validateCVC = (cvc: string): string | null => {
+    if (!cvc) {
+      return "CVC is required";
+    }
+    
+    if (cvc.length < 3 || cvc.length > 4) {
+      return "CVC must be 3 or 4 digits";
+    }
+    
+    return null;
+  };
+
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -79,6 +154,51 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
 
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate all payment fields
+    const cardError = validateCardNumber(formData.cardNumber);
+    if (cardError) {
+      toast({
+        title: "Invalid Card Number",
+        description: cardError,
+        variant: "destructive",
+        duration: 3000,
+      });
+      return;
+    }
+    
+    const expiryError = validateExpiry(formData.expiry);
+    if (expiryError) {
+      toast({
+        title: "Invalid Expiry Date",
+        description: expiryError,
+        variant: "destructive",
+        duration: 3000,
+      });
+      return;
+    }
+    
+    const cvcError = validateCVC(formData.cvc);
+    if (cvcError) {
+      toast({
+        title: "Invalid CVC",
+        description: cvcError,
+        variant: "destructive",
+        duration: 3000,
+      });
+      return;
+    }
+    
+    if (!formData.cardName || formData.cardName.trim().length < 2) {
+      toast({
+        title: "Invalid Cardholder Name",
+        description: "Please enter the name on the card",
+        variant: "destructive",
+        duration: 3000,
+      });
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
