@@ -71,43 +71,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Video not found" });
       }
 
-      // Download the entire file as bytes to get size and support range requests
-      const downloadResult = await storageClient.downloadAsBytes(filename);
-      if (!downloadResult.ok) {
-        console.error("Error downloading video:", downloadResult.error);
-        return res.status(500).json({ error: "Failed to retrieve video" });
-      }
-
-      const fileBuffer = downloadResult.value;
-      const fileSize = fileBuffer.length;
-      const rangeHeader = req.headers.range;
-
+      const stream = await storageClient.downloadAsStream(filename);
+      
       res.setHeader('Content-Type', 'video/mp4');
       res.setHeader('Accept-Ranges', 'bytes');
-      res.setHeader('Cache-Control', 'public, max-age=86400');
-
-      // Handle range requests (required for Safari seeking)
-      if (rangeHeader) {
-        const rangeMatch = rangeHeader.match(/bytes=(\d+)-(\d*)/);
-        if (rangeMatch) {
-          const start = parseInt(rangeMatch[1], 10);
-          const end = rangeMatch[2] ? parseInt(rangeMatch[2], 10) : fileSize - 1;
-
-          if (start >= fileSize || end >= fileSize || start > end) {
-            res.status(416).setHeader('Content-Range', `bytes */${fileSize}`);
-            return res.end();
-          }
-
-          res.status(206);
-          res.setHeader('Content-Length', end - start + 1);
-          res.setHeader('Content-Range', `bytes ${start}-${end}/${fileSize}`);
-          return res.end(fileBuffer.slice(start, end + 1));
+      
+      stream.on('error', (error) => {
+        console.error("Stream error:", error);
+        if (!res.headersSent) {
+          res.status(500).json({ error: "Failed to stream video" });
         }
-      }
-
-      // Send full file
-      res.setHeader('Content-Length', fileSize);
-      res.end(fileBuffer);
+      });
+      
+      stream.pipe(res);
     } catch (error) {
       console.error("Video streaming error:", error);
       return res.status(500).json({ error: "Internal server error" });
