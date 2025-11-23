@@ -3,9 +3,19 @@ import { motion } from "framer-motion";
 import heroImage from "@assets/generated_images/Hero_illustration_of_chat_connecting_to_ecommerce_ab62e0cf.png";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { TrialSignupModal } from "@/components/TrialSignupModal";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function Hero() {
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
   return (
+    <>
     <section className="relative pt-32 pb-20 overflow-hidden bg-hero-gradient">
       <div className="container mx-auto px-6">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
@@ -32,7 +42,13 @@ export default function Hero() {
                     Start Your 14-Day Free Trial <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </TrialSignupModal>
-                <Button variant="outline" size="lg" className="text-foreground border-gray-200 hover:bg-gray-50 text-lg px-8 h-12">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="text-foreground border-gray-200 hover:bg-gray-50 text-lg px-8 h-12"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  data-testid="button-view-demo"
+                >
                   View Demo
                 </Button>
               </div>
@@ -58,18 +74,11 @@ export default function Hero() {
               className="relative z-10"
             >
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-[#FF6900]/20 rounded-full blur-3xl opacity-30"></div>
-              <video 
-                src="/api/video/SellWithGPTIntroVideo.mp4"
+              <img 
+                src={heroImage} 
+                alt="ChatGPT Integration Interface" 
                 className="relative w-full h-auto rounded-2xl shadow-2xl border border-white/20 backdrop-blur-sm"
-                autoPlay
-                muted
-                loop
-                playsInline
-                controls
-                data-testid="video-hero-demo"
-              >
-                Your browser does not support the video tag.
-              </video>
+              />
               
               {/* Floating UI Cards for effect */}
               <motion.div 
@@ -101,5 +110,25 @@ export default function Hero() {
         </div>
       </div>
     </section>
+
+    <Dialog open={isVideoModalOpen} onOpenChange={setIsVideoModalOpen}>
+      <DialogContent className="sm:max-w-[900px] p-0">
+        <DialogHeader className="p-6 pb-4">
+          <DialogTitle className="text-2xl font-bold">Product Demo</DialogTitle>
+        </DialogHeader>
+        <div className="px-6 pb-6">
+          <video 
+            src="/api/video/SellWithGPTIntroVideo.mp4"
+            className="w-full h-auto rounded-lg"
+            controls
+            autoPlay
+            data-testid="video-demo-modal"
+          >
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
