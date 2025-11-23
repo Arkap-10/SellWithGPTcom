@@ -15,7 +15,7 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 44623
+localPort = 44719
 externalPort = 3000
 
 [env]
@@ -45,3 +45,6 @@ waitForPort = 5000
 [agent]
 mockupState = "FULLSTACK"
 integrations = ["javascript_database:1.0.0"]
+
+[objectStorage]
+defaultBucketID = "replit-objstore-1602003e-c497-4744-9460-73f4bbb787b9"

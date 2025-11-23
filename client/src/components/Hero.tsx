@@ -122,6 +122,8 @@ export default function Hero() {
             className="w-full h-auto rounded-lg"
             controls
             autoPlay
+            playsInline
+            preload="auto"
             data-testid="video-demo-modal"
           >
             Your browser does not support the video tag.
