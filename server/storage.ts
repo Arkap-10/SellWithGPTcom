@@ -1,5 +1,6 @@
-import { type TrialSignup, type InsertTrialSignup } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { type TrialSignup, type InsertTrialSignup, trialSignups } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getTrialSignupByEmail(email: string): Promise<TrialSignup | undefined>;
@@ -7,36 +8,29 @@ export interface IStorage {
   getAllTrialSignups(): Promise<TrialSignup[]>;
 }
 
-export class MemStorage implements IStorage {
-  private trialSignups: Map<string, TrialSignup>;
-
-  constructor() {
-    this.trialSignups = new Map();
-  }
-
+export class DatabaseStorage implements IStorage {
   async getTrialSignupByEmail(email: string): Promise<TrialSignup | undefined> {
-    return Array.from(this.trialSignups.values()).find(
-      (signup) => signup.email === email,
-    );
+    const results = await db
+      .select()
+      .from(trialSignups)
+      .where(eq(trialSignups.email, email))
+      .limit(1);
+    
+    return results[0];
   }
 
   async createTrialSignup(insertSignup: InsertTrialSignup): Promise<TrialSignup> {
-    const id = randomUUID();
-    const signup: TrialSignup = {
-      id,
-      email: insertSignup.email,
-      password: insertSignup.password,
-      planName: insertSignup.planName || "Growth",
-      cardProvided: insertSignup.cardProvided || false,
-      createdAt: new Date(),
-    };
-    this.trialSignups.set(id, signup);
-    return signup;
+    const results = await db
+      .insert(trialSignups)
+      .values(insertSignup)
+      .returning();
+    
+    return results[0];
   }
 
   async getAllTrialSignups(): Promise<TrialSignup[]> {
-    return Array.from(this.trialSignups.values());
+    return await db.select().from(trialSignups);
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

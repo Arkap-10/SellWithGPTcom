@@ -29,6 +29,9 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    fullName: "",
+    companyName: "",
+    phone: "",
     cardNumber: "",
     expiry: "",
     cvc: "",
@@ -53,6 +56,9 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
+          fullName: formData.fullName,
+          companyName: formData.companyName || undefined,
+          phone: formData.phone || undefined,
           planName,
           cardProvided: true,
         }),
@@ -70,6 +76,9 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
       setFormData({
         email: "",
         password: "",
+        fullName: "",
+        companyName: "",
+        phone: "",
         cardNumber: "",
         expiry: "",
         cvc: "",
@@ -117,15 +126,46 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
           {step === 1 ? (
             <form onSubmit={handleEmailSubmit} className="space-y-4">
               <div className="space-y-2">
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input 
+                  id="fullName" 
+                  type="text" 
+                  placeholder="John Doe" 
+                  required 
+                  autoFocus 
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="email">Work Email</Label>
                 <Input 
                   id="email" 
                   type="email" 
                   placeholder="name@company.com" 
                   required 
-                  autoFocus 
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="companyName">Company Name</Label>
+                <Input 
+                  id="companyName" 
+                  type="text" 
+                  placeholder="Acme Inc." 
+                  value={formData.companyName}
+                  onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number (optional)</Label>
+                <Input 
+                  id="phone" 
+                  type="tel" 
+                  placeholder="+1 (555) 000-0000" 
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
