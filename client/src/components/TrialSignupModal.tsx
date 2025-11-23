@@ -28,7 +28,6 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
-    password: "",
     fullName: "",
     companyName: "",
     phone: "",
@@ -55,7 +54,6 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
         },
         body: JSON.stringify({
           email: formData.email,
-          password: formData.password,
           fullName: formData.fullName,
           companyName: formData.companyName || undefined,
           phone: formData.phone || undefined,
@@ -75,7 +73,6 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
       setStep(1);
       setFormData({
         email: "",
-        password: "",
         fullName: "",
         companyName: "",
         phone: "",
@@ -186,17 +183,6 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
                   placeholder="+1 (555) 000-0000" 
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Create Password</Label>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  placeholder="Min. 8 characters" 
-                  required 
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
               </div>
               <Button type="submit" className="w-full bg-[#0066CC] hover:bg-[#0052a3] h-11 text-base">
