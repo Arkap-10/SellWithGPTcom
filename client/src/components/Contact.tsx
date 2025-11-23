@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, ArrowRight } from "lucide-react";
+import { TrialSignupModal } from "./TrialSignupModal";
 
 export default function Contact() {
   return (
+    <>
     <section id="contact" className="py-24 bg-white">
       <div className="container mx-auto px-6">
         <div className="flex flex-col lg:flex-row gap-16 items-start">
@@ -35,32 +35,30 @@ export default function Contact() {
           <div className="lg:w-1/2 w-full">
             <Card className="border border-gray-200 shadow-xl bg-white p-2">
               <CardContent className="p-6 md:p-8">
-                <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label htmlFor="name" className="text-sm font-medium text-foreground">Full Name</label>
-                      <Input id="name" placeholder="John Doe" className="h-11 bg-gray-50 border-gray-200 focus:bg-white" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="email" className="text-sm font-medium text-foreground">Work Email</label>
-                      <Input id="email" type="email" placeholder="john@company.com" className="h-11 bg-gray-50 border-gray-200 focus:bg-white" />
-                    </div>
+                <div className="text-center space-y-6">
+                  <div className="space-y-4">
+                    <h3 className="text-2xl font-bold font-heading text-foreground">
+                      Start Your Free Trial
+                    </h3>
+                    <p className="text-muted-foreground text-lg">
+                      Join leading e-commerce businesses using AI to drive sales. No credit card required for the first 7 days.
+                    </p>
                   </div>
                   
-                  <div className="space-y-2">
-                    <label htmlFor="company" className="text-sm font-medium text-foreground">Company Name</label>
-                    <Input id="company" placeholder="Acme Inc." className="h-11 bg-gray-50 border-gray-200 focus:bg-white" />
+                  <div className="space-y-3 pt-4">
+                    <TrialSignupModal>
+                      <Button 
+                        className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-medium text-lg"
+                        data-testid="button-start-trial-contact"
+                      >
+                        Start Free Trial <ArrowRight className="ml-2 w-5 h-5" />
+                      </Button>
+                    </TrialSignupModal>
+                    <p className="text-sm text-muted-foreground">
+                      Get started in minutes • Cancel anytime
+                    </p>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <label htmlFor="message" className="text-sm font-medium text-foreground">How can we help?</label>
-                    <Textarea id="message" placeholder="Tell us about your project needs..." className="min-h-[120px] bg-gray-50 border-gray-200 focus:bg-white resize-none" />
-                  </div>
-
-                  <Button type="submit" className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-medium text-lg">
-                    Request Demo <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </form>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -68,5 +66,6 @@ export default function Contact() {
         </div>
       </div>
     </section>
+    </>
   );
 }
