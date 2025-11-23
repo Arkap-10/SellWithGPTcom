@@ -101,6 +101,14 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
     }
   };
 
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+      value = value.slice(0, 2) + '/' + value.slice(2, 4);
+    }
+    setFormData({ ...formData, expiry: value });
+  };
+
   const futureDate = new Date();
   futureDate.setDate(futureDate.getDate() + 14);
   const trialEndDate = futureDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
@@ -213,7 +221,8 @@ export function TrialSignupModal({ children, planName = "Growth", price = "$149"
                       className="font-mono" 
                       required 
                       value={formData.expiry}
-                      onChange={(e) => setFormData({ ...formData, expiry: e.target.value })}
+                      onChange={handleExpiryChange}
+                      maxLength={5}
                     />
                   </div>
                   <div className="space-y-2">
