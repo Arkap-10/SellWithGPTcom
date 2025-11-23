@@ -1,14 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import heroImage from "@assets/generated_images/Hero_illustration_of_chat_connecting_to_ecommerce_ab62e0cf.png";
-import introVideo from "@assets/SellWithGPTIntroVideo_1763915840858.mp4";
-import { ArrowRight, CheckCircle, Play } from "lucide-react";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import { TrialSignupModal } from "@/components/TrialSignupModal";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 export default function Hero() {
   return (
@@ -38,24 +32,9 @@ export default function Hero() {
                     Start Your 14-Day Free Trial <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </TrialSignupModal>
-                
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="lg" className="text-foreground border-gray-200 hover:bg-gray-50 text-lg px-8 h-12 gap-2">
-                      <Play className="w-5 h-5" /> Watch Demo
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[800px] p-0 border-none bg-black/5 shadow-2xl">
-                    <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black">
-                      <video 
-                        src={introVideo} 
-                        controls 
-                        autoPlay 
-                        className="w-full h-full object-contain" 
-                      />
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                <Button variant="outline" size="lg" className="text-foreground border-gray-200 hover:bg-gray-50 text-lg px-8 h-12">
+                  View Demo
+                </Button>
               </div>
 
               <div className="flex items-center gap-6 text-sm font-medium text-muted-foreground">
