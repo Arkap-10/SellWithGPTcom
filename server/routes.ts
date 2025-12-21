@@ -62,9 +62,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // CORS preflight handler for video endpoint
+  app.options("/api/video/:filename", (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Range, Content-Type');
+    res.setHeader('Access-Control-Max-Age', '86400');
+    res.status(204).end();
+  });
+
   app.get("/api/video/:filename", async (req, res) => {
     try {
       const { filename } = req.params;
+      
+      // Set CORS headers for iOS Safari and cross-origin requests
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Range, Content-Type');
+      res.setHeader('Access-Control-Expose-Headers', 'Content-Length, Content-Range');
       
       const existsResult = await storageClient.exists(filename);
       if (!existsResult.ok || !existsResult.value) {
