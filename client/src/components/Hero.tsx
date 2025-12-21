@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import heroImage from "@assets/generated_images/Hero_illustration_of_chat_connecting_to_ecommerce_ab62e0cf.png";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { TrialSignupModal } from "@/components/TrialSignupModal";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,23 @@ import {
 
 export default function Hero() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const handleViewDemo = () => {
+    setIsVideoModalOpen(true);
+    // Trigger play directly from user click - required for iOS Safari
+    setTimeout(() => {
+      videoRef.current?.play().catch(console.error);
+    }, 100);
+  };
+
+  const handleModalClose = (open: boolean) => {
+    if (!open && videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+    setIsVideoModalOpen(open);
+  };
 
   return (
     <>
@@ -46,7 +63,7 @@ export default function Hero() {
                   variant="outline" 
                   size="lg" 
                   className="text-foreground border-gray-200 hover:bg-gray-50 text-lg px-8 h-12"
-                  onClick={() => setIsVideoModalOpen(true)}
+                  onClick={handleViewDemo}
                   data-testid="button-view-demo"
                 >
                   View Demo
@@ -111,17 +128,20 @@ export default function Hero() {
       </div>
     </section>
 
-    <Dialog open={isVideoModalOpen} onOpenChange={setIsVideoModalOpen}>
+    <Dialog open={isVideoModalOpen} onOpenChange={handleModalClose}>
       <DialogContent className="sm:max-w-[900px] p-0">
         <DialogHeader className="p-6 pb-4">
           <DialogTitle className="text-2xl font-bold">Product Demo</DialogTitle>
         </DialogHeader>
         <div className="px-6 pb-6">
           <video 
+            ref={videoRef}
             src="/api/video/SellWithGPTIntroVideo.mp4"
             className="w-full h-auto rounded-lg"
             controls
-            autoPlay
+            playsInline
+            muted
+            preload="auto"
             data-testid="video-demo-modal"
           >
             Your browser does not support the video tag.
