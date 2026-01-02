@@ -11,6 +11,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+const YOUTUBE_VIDEO_ID = "zm_qJiOfIug";
+
 export default function Hero() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
@@ -117,15 +119,19 @@ export default function Hero() {
           <DialogTitle className="text-2xl font-bold">Product Demo</DialogTitle>
         </DialogHeader>
         <div className="px-6 pb-6">
-          <video 
-            src="/api/video/SellWithGPTIntroVideo.mp4"
-            className="w-full h-auto rounded-lg"
-            controls
-            autoPlay
-            data-testid="video-demo-modal"
-          >
-            Your browser does not support the video tag.
-          </video>
+          <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+            {isVideoModalOpen && (
+              <iframe
+                className="absolute top-0 left-0 w-full h-full rounded-lg"
+                src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&rel=0&modestbranding=1`}
+                title="SellWithGPT Product Demo"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                data-testid="video-demo-modal"
+              />
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
