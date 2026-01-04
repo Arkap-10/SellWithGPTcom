@@ -6,11 +6,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock, CreditCard, ShieldCheck } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CheckCircle, Calendar, Building2 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import logo from "@assets/SellWithGPTLogo_1763916030768.jpeg";
@@ -20,6 +26,8 @@ interface TrialSignupModalProps {
   planName?: string;
   price?: string;
 }
+
+const GOOGLE_CALENDAR_URL = "https://calendar.app.google/s14wWTqUowReHzsB7";
 
 export function TrialSignupModal({ children, planName = "", price = "" }: TrialSignupModalProps) {
   const [step, setStep] = useState(1);
@@ -31,10 +39,9 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
     fullName: "",
     companyName: "",
     phone: "",
-    cardNumber: "",
-    expiry: "",
-    cvc: "",
-    cardName: "",
+    magentoVersion: "",
+    monthlyOrders: "",
+    integrationTimeline: "",
   });
 
   const validateEmail = (email: string): string | null => {
@@ -60,81 +67,6 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
     return null;
   };
 
-  const validateCardNumber = (cardNumber: string): string | null => {
-    const digits = cardNumber.replace(/\D/g, '');
-    
-    if (!digits) {
-      return "Card number is required";
-    }
-    
-    if (digits.length < 13 || digits.length > 19) {
-      return "Card number must be between 13 and 19 digits";
-    }
-    
-    // Luhn algorithm validation
-    let sum = 0;
-    let isEven = false;
-    
-    for (let i = digits.length - 1; i >= 0; i--) {
-      let digit = parseInt(digits[i]);
-      
-      if (isEven) {
-        digit *= 2;
-        if (digit > 9) {
-          digit -= 9;
-        }
-      }
-      
-      sum += digit;
-      isEven = !isEven;
-    }
-    
-    if (sum % 10 !== 0) {
-      return "Please enter a valid card number";
-    }
-    
-    return null;
-  };
-
-  const validateExpiry = (expiry: string): string | null => {
-    if (!expiry) {
-      return "Expiry date is required";
-    }
-    
-    const parts = expiry.split('/');
-    if (parts.length !== 2) {
-      return "Please enter expiry in MM/YY format";
-    }
-    
-    const month = parseInt(parts[0]);
-    const year = parseInt(parts[1]);
-    
-    if (month < 1 || month > 12) {
-      return "Invalid month";
-    }
-    
-    const currentYear = new Date().getFullYear() % 100;
-    const currentMonth = new Date().getMonth() + 1;
-    
-    if (year < currentYear || (year === currentYear && month < currentMonth)) {
-      return "Card has expired";
-    }
-    
-    return null;
-  };
-
-  const validateCVC = (cvc: string): string | null => {
-    if (!cvc) {
-      return "CVC is required";
-    }
-    
-    if (cvc.length < 3 || cvc.length > 4) {
-      return "CVC must be 3 or 4 digits";
-    }
-    
-    return null;
-  };
-
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -152,47 +84,33 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
     setStep(2);
   };
 
-  const handlePaymentSubmit = async (e: React.FormEvent) => {
+  const handleQualificationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate all payment fields
-    const cardError = validateCardNumber(formData.cardNumber);
-    if (cardError) {
+    if (!formData.magentoVersion) {
       toast({
-        title: "Invalid Card Number",
-        description: cardError,
+        title: "Required Field",
+        description: "Please select your Magento version",
         variant: "destructive",
         duration: 3000,
       });
       return;
     }
     
-    const expiryError = validateExpiry(formData.expiry);
-    if (expiryError) {
+    if (!formData.monthlyOrders) {
       toast({
-        title: "Invalid Expiry Date",
-        description: expiryError,
+        title: "Required Field",
+        description: "Please select your monthly order volume",
         variant: "destructive",
         duration: 3000,
       });
       return;
     }
     
-    const cvcError = validateCVC(formData.cvc);
-    if (cvcError) {
+    if (!formData.integrationTimeline) {
       toast({
-        title: "Invalid CVC",
-        description: cvcError,
-        variant: "destructive",
-        duration: 3000,
-      });
-      return;
-    }
-    
-    if (!formData.cardName || formData.cardName.trim().length < 2) {
-      toast({
-        title: "Invalid Cardholder Name",
-        description: "Please enter the name on the card",
+        title: "Required Field",
+        description: "Please select your integration timeline",
         variant: "destructive",
         duration: 3000,
       });
@@ -202,14 +120,6 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
     setIsLoading(true);
     
     try {
-      const cardDigits = formData.cardNumber.replace(/\D/g, '');
-      let maskedCard = '';
-      if (cardDigits.length >= 8) {
-        const first4 = cardDigits.slice(0, 4);
-        const last4 = cardDigits.slice(-4);
-        maskedCard = `${first4} xxxx xxxx ${last4}`;
-      }
-      
       const response = await fetch("/api/trial-signup", {
         method: "POST",
         headers: {
@@ -221,8 +131,9 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
           companyName: formData.companyName || undefined,
           phone: formData.phone || undefined,
           planName: planName || null,
-          cardProvided: true,
-          cardMasked: maskedCard || undefined,
+          magentoVersion: formData.magentoVersion,
+          monthlyOrders: formData.monthlyOrders,
+          integrationTimeline: formData.integrationTimeline,
         }),
       });
 
@@ -233,24 +144,7 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
       }
 
       setIsLoading(false);
-      setIsOpen(false);
-      setStep(1);
-      setFormData({
-        email: "",
-        fullName: "",
-        companyName: "",
-        phone: "",
-        cardNumber: "",
-        expiry: "",
-        cvc: "",
-        cardName: "",
-      });
-      
-      toast({
-        title: "Trial Started Successfully!",
-        description: "Our team will be in touch with you shortly on the email provided. Welcome to SellWithGPT.",
-        duration: 5000,
-      });
+      setStep(3); // Go to success screen
     } catch (error: any) {
       setIsLoading(false);
       toast({
@@ -262,24 +156,20 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
     }
   };
 
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, '');
-    let formattedValue = '';
-    for (let i = 0; i < value.length && i < 16; i++) {
-      if (i > 0 && i % 4 === 0) {
-        formattedValue += ' ';
-      }
-      formattedValue += value[i];
-    }
-    setFormData({ ...formData, cardNumber: formattedValue });
-  };
-
-  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length >= 2) {
-      value = value.slice(0, 2) + '/' + value.slice(2, 4);
-    }
-    setFormData({ ...formData, expiry: value });
+  const handleClose = () => {
+    setIsOpen(false);
+    setTimeout(() => {
+      setStep(1);
+      setFormData({
+        email: "",
+        fullName: "",
+        companyName: "",
+        phone: "",
+        magentoVersion: "",
+        monthlyOrders: "",
+        integrationTimeline: "",
+      });
+    }, 300);
   };
 
   const futureDate = new Date();
@@ -287,7 +177,7 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
   const trialEndDate = futureDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => open ? setIsOpen(true) : handleClose()}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
@@ -297,9 +187,14 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
             <img src={logo} alt="SellWithGPT Logo" className="w-6 h-6 rounded object-cover" />
             <span className="font-bold font-heading text-foreground">SellWithGPT</span>
           </div>
-          <DialogTitle className="text-xl font-bold">Start your 14-day free trial</DialogTitle>
+          <DialogTitle className="text-xl font-bold">
+            {step === 3 ? "You're All Set!" : "Start your 14-day free trial"}
+          </DialogTitle>
           <DialogDescription className="text-muted-foreground mt-1">
-            No charge today. Cancel anytime before {trialEndDate}.
+            {step === 3 
+              ? "Schedule a call with our team to get started" 
+              : `No charge today. Cancel anytime before ${trialEndDate}.`
+            }
           </DialogDescription>
         </div>
 
@@ -316,6 +211,7 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
                   autoFocus 
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  data-testid="input-fullname"
                 />
               </div>
               <div className="space-y-2">
@@ -328,6 +224,7 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                  data-testid="input-email"
                 />
               </div>
               <div className="space-y-2">
@@ -338,6 +235,7 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
                   placeholder="Acme Inc." 
                   value={formData.companyName}
                   onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                  data-testid="input-company"
                 />
               </div>
               <div className="space-y-2">
@@ -348,88 +246,126 @@ export function TrialSignupModal({ children, planName = "", price = "" }: TrialS
                   placeholder="+1 (555) 000-0000" 
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  data-testid="input-phone"
                 />
               </div>
-              <Button type="submit" className="w-full bg-[#0066CC] hover:bg-[#0052a3] h-11 text-base">
+              <Button type="submit" className="w-full bg-[#0066CC] hover:bg-[#0052a3] h-11 text-base" data-testid="button-continue">
                 Continue
               </Button>
             </form>
-          ) : (
-            <form onSubmit={handlePaymentSubmit} className="space-y-5">
+          ) : step === 2 ? (
+            <form onSubmit={handleQualificationSubmit} className="space-y-5">
               <div className="bg-blue-50 p-3 rounded-md flex items-start gap-3 text-sm text-blue-800">
-                <ShieldCheck className="w-5 h-5 shrink-0 mt-0.5" />
-                <p>We verify card validity with a $0.00 hold. You won't be charged until your trial ends.</p>
+                <Building2 className="w-5 h-5 shrink-0 mt-0.5" />
+                <p>Help us understand your business so we can provide the best onboarding experience.</p>
               </div>
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Card Information</Label>
-                  <div className="relative">
-                    <CreditCard className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <Input 
-                      placeholder="0000 0000 0000 0000" 
-                      className="pl-10 font-mono" 
-                      required 
-                      value={formData.cardNumber}
-                      onChange={handleCardNumberChange}
-                      maxLength={19}
-                    />
-                  </div>
+                  <Label>Magento Version</Label>
+                  <Select 
+                    value={formData.magentoVersion} 
+                    onValueChange={(value) => setFormData({ ...formData, magentoVersion: value })}
+                  >
+                    <SelectTrigger data-testid="select-magento-version">
+                      <SelectValue placeholder="Select your Magento version" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="magento2">Magento 2 (Open Source)</SelectItem>
+                      <SelectItem value="adobe-commerce">Adobe Commerce (Magento 2)</SelectItem>
+                      <SelectItem value="magento1">Magento 1 (Legacy)</SelectItem>
+                      <SelectItem value="planning">Planning to migrate</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Expiry Date</Label>
-                    <Input 
-                      placeholder="MM / YY" 
-                      className="font-mono" 
-                      required 
-                      value={formData.expiry}
-                      onChange={handleExpiryChange}
-                      maxLength={5}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>CVC</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-                      <Input 
-                        placeholder="123" 
-                        className="pl-9 font-mono" 
-                        required 
-                        value={formData.cvc}
-                        onChange={(e) => setFormData({ ...formData, cvc: e.target.value })}
-                      />
-                    </div>
-                  </div>
+                <div className="space-y-2">
+                  <Label>Monthly Order Volume</Label>
+                  <Select 
+                    value={formData.monthlyOrders} 
+                    onValueChange={(value) => setFormData({ ...formData, monthlyOrders: value })}
+                  >
+                    <SelectTrigger data-testid="select-monthly-orders">
+                      <SelectValue placeholder="Select your monthly orders" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0-100">0 - 100 orders</SelectItem>
+                      <SelectItem value="100-500">100 - 500 orders</SelectItem>
+                      <SelectItem value="500-2000">500 - 2,000 orders</SelectItem>
+                      <SelectItem value="2000-10000">2,000 - 10,000 orders</SelectItem>
+                      <SelectItem value="10000+">10,000+ orders</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Name on Card</Label>
-                  <Input 
-                    placeholder="Cardholder Name" 
-                    required 
-                    value={formData.cardName}
-                    onChange={(e) => setFormData({ ...formData, cardName: e.target.value })}
-                  />
+                  <Label>Integration Timeline</Label>
+                  <Select 
+                    value={formData.integrationTimeline} 
+                    onValueChange={(value) => setFormData({ ...formData, integrationTimeline: value })}
+                  >
+                    <SelectTrigger data-testid="select-timeline">
+                      <SelectValue placeholder="When do you want to integrate?" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="asap">As soon as possible</SelectItem>
+                      <SelectItem value="1-2-weeks">Within 1-2 weeks</SelectItem>
+                      <SelectItem value="1-month">Within a month</SelectItem>
+                      <SelectItem value="evaluating">Just evaluating options</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
               <div className="pt-2">
-                <div className="flex justify-between items-center mb-4 text-sm">
-                  <span className="font-medium">Total due today</span>
-                  <span className="font-bold text-lg">$0.00</span>
-                </div>
-                
-                <Button type="submit" className="w-full bg-[#0066CC] hover:bg-[#0052a3] h-11 text-base" disabled={isLoading}>
-                  {isLoading ? "Verifying..." : `Start Free Trial`}
+                <Button type="submit" className="w-full bg-[#0066CC] hover:bg-[#0052a3] h-11 text-base" disabled={isLoading} data-testid="button-submit">
+                  {isLoading ? "Submitting..." : "Complete Signup"}
                 </Button>
-                <p className="text-xs text-center text-muted-foreground mt-3">
-                  By clicking "Start Free Trial", you agree to our Terms of Service. 
-                  Plan renews at {price}/mo after trial.
-                </p>
+                <button 
+                  type="button" 
+                  onClick={() => setStep(1)} 
+                  className="w-full text-sm text-muted-foreground mt-3 hover:text-foreground"
+                >
+                  Back to contact info
+                </button>
               </div>
             </form>
+          ) : (
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-bold text-foreground mb-2">Welcome to SellWithGPT!</h3>
+                <p className="text-muted-foreground text-sm">
+                  Your trial account is ready. Schedule a quick onboarding call with our team to get started.
+                </p>
+              </div>
+
+              <a
+                href={GOOGLE_CALENDAR_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 w-full bg-[#0066CC] hover:bg-[#0052a3] text-white h-12 rounded-md text-base font-medium transition-colors"
+                data-testid="button-schedule-call"
+              >
+                <Calendar className="w-5 h-5" />
+                Schedule Your Onboarding Call
+              </a>
+
+              <p className="text-xs text-muted-foreground">
+                We'll walk you through setup and answer any questions. Takes about 15 minutes.
+              </p>
+
+              <button 
+                type="button" 
+                onClick={handleClose} 
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                I'll schedule later
+              </button>
+            </div>
           )}
         </div>
       </DialogContent>
