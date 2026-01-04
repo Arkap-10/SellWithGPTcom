@@ -26,7 +26,7 @@ export default function Contact() {
                 <div>
                   <h3 className="text-xl font-bold mb-2">Email Us</h3>
                   <p className="text-muted-foreground mb-1">Our team typically responds within 2 hours.</p>
-                  <a href="mailto:sales@sellwithgpt.com" className="text-[#0066CC] font-medium hover:underline">sales@sellwithgpt.com</a>
+                  <a href="mailto:hello@sellwithgpt.com" className="text-[#0066CC] font-medium hover:underline">hello@sellwithgpt.com</a>
                 </div>
               </div>
             </div>
