@@ -25,7 +25,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: signup.id,
           email: signup.email,
           planName: signup.planName,
-          cardMasked: signup.cardMasked,
+          magentoVersion: signup.magentoVersion,
+          monthlyOrders: signup.monthlyOrders,
+          integrationTimeline: signup.integrationTimeline,
           createdAt: signup.createdAt,
         }
       });
@@ -51,8 +53,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: s.id,
           email: s.email,
           planName: s.planName,
-          cardProvided: s.cardProvided,
-          cardMasked: s.cardMasked,
+          magentoVersion: s.magentoVersion,
+          monthlyOrders: s.monthlyOrders,
+          integrationTimeline: s.integrationTimeline,
           createdAt: s.createdAt,
         }))
       });

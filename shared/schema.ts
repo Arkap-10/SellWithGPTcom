@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -10,8 +10,9 @@ export const trialSignups = pgTable("trial_signups", {
   companyName: text("company_name"),
   phone: text("phone"),
   planName: text("plan_name"),
-  cardProvided: boolean("card_provided").notNull().default(false),
-  cardMasked: text("card_masked"),
+  magentoVersion: text("magento_version"),
+  monthlyOrders: text("monthly_orders"),
+  integrationTimeline: text("integration_timeline"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -21,8 +22,9 @@ export const insertTrialSignupSchema = createInsertSchema(trialSignups).pick({
   companyName: true,
   phone: true,
   planName: true,
-  cardProvided: true,
-  cardMasked: true,
+  magentoVersion: true,
+  monthlyOrders: true,
+  integrationTimeline: true,
 }).extend({
   email: z
     .string()
@@ -52,7 +54,9 @@ export const insertTrialSignupSchema = createInsertSchema(trialSignups).pick({
   fullName: z.string().min(2, "Full name is required"),
   companyName: z.string().optional(),
   phone: z.string().optional(),
-  cardMasked: z.string().optional(),
+  magentoVersion: z.string().optional(),
+  monthlyOrders: z.string().optional(),
+  integrationTimeline: z.string().optional(),
 });
 
 export type InsertTrialSignup = z.infer<typeof insertTrialSignupSchema>;
